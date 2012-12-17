@@ -1,7 +1,7 @@
 image_toolbox_grail
 ===================
 
-code that implements various of image analysis algorithms that are not included in SciPy.
+code that implements various of image processing/analysis algorithms that are not included in Numpy/SciPy.
 
 Now implemented: 
   * 2-level Otsu's method for image thresholding.
