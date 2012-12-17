@@ -1,4 +1,8 @@
+# misc
 *~
+*.jpg
+*.jpeg
+*.png
 
 # C extensions
 *.so

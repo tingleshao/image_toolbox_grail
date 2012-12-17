@@ -11,7 +11,8 @@ def process(arg):
     misc.imsave('lena.png', l)
     l2rgb = misc.imread('me.jpeg')
     l2 = l2rgb[:,:,0]
-    pl.imshow(l2rgb[:,:,0],cmap=pl.cm.gray)
+    pl.imshow(l2rgb[:,:,0],cmap=pl.cm.gray) 
+    pl.axis('off')
     pl.show()
     t = otsu(l2)
     print t 
@@ -23,8 +24,6 @@ def process(arg):
                 l2[i,j] = 1
     #pl.imshow(l2,cmap=pl.cm.gray,vmin=0,vmax=1)
   
-    
-    
 
 def otsu(img):
     # this function outputs a threshold
@@ -69,6 +68,7 @@ def thresImg(img, level=2):
 def main():
     # parse command line options
     try:
+        print 'argv: '+ str(sys.argv)
         opts, args = getopt.getopt(sys.argv[1:], "h", ["help"])
     except getopt.error, msg:
         print msg
