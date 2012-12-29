@@ -7,8 +7,6 @@ __doc__ = 'this is doc!'
 
 def process(arg):
     print "args: " + arg
-    l = misc.lena()
-    misc.imsave('lena.png', l)
     l2rgb = misc.imread('me.jpeg')
     l2 = l2rgb[:,:,0]
     pl.imshow(l2rgb[:,:,0],cmap=pl.cm.gray) 
