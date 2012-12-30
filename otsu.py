@@ -10,8 +10,7 @@ def process(arg):
     l2rgb = misc.imread('me.jpeg')
     l2 = l2rgb[:,:,0]
     pl.imshow(l2rgb[:,:,0],cmap=pl.cm.gray) 
-    pl.axis('off')
-    pl.show()
+
     t = otsu(l2)
     print t 
     for i in range(l2.shape[0]):
@@ -19,8 +18,10 @@ def process(arg):
             if l2[i,j] <= t:
                 l2[i,j] = 0
             else:
-                l2[i,j] = 1
-    #pl.imshow(l2,cmap=pl.cm.gray,vmin=0,vmax=1)
+                l2[i,j] = 255
+    pl.imshow(l2,cmap=pl.cm.gray)
+    pl.axis('off')
+    pl.show()
   
 
 def otsu(img):
@@ -28,30 +29,29 @@ def otsu(img):
     hist = histogram(img)
     delta_b_sq = [] 
     for t in range(1,len(hist)):
-        p0 = calculateP(hist[0:t])
-        p1 = calculateP(hist[t:len(hist)])
+        p0 = calculateP(hist[0:t],sum(hist))
+        p1 = calculateP(hist[t:len(hist)],sum(hist))
         w0 = sum(p0)
         w1 = sum(p1)
-        u0 = sum([a*b for a,b in zip(hist[0:t],p0)])
-        u1 = sum([a*b for a,b in zip(hist[t:-1],p1)])
+        u0 = sum([a*b for a,b in zip(range(0,t),p0)])
+        u1 = sum([a*b for a,b in zip(range(t,len(hist)-1),p1)])
         delta_b_sq.append(w0*w1*((u0-u1)**2)) 
     # find maximum 
     t = delta_b_sq.index(max(delta_b_sq))
     return t
 
-def calculateP(hist):
+def calculateP(hist,hist_sum):
     # this function calculates the probability given the histogram
     # the histogram can be a sub histogram in a larger one
     p = []
-    hist_sum = sum(hist)
     for i in range(len(hist)):
         p.append(float(hist[i]) / hist_sum)
     return p    
 
 
 def histogram(img):
-    im_min = img.min()
-    im_max = img.max()
+    im_min = 0
+    im_max = 255
     hist = [0] * (im_max + 1 - im_min)
     for i in range(img.shape[0]):
         for j in range(img.shape[1]):
