@@ -3,13 +3,20 @@ import getopt
 from scipy import misc
 import numpy as np
 import pylab as pl
+from scipy import ndimage
 
 __doc__ = 'this is doc!'
 
 def process(arg):
     print "args: " + arg
     im_name = arg
-    l2 = misc.imread(im_name+'.jpeg')
+    l2 = misc.imread(im_name)
+    pl.imshow(l2) 
+    pl.axis('off')
+ 
+    ndimage.gaussian_filter(l2, sigma=5)
+    l2 = misc.imresize(l2,(32,32),interp='nearest',mode=None)
+ #   ndimage.gaussian_filter(l2, sigma=5)
    # t = otsu(l2)
     #print t[0]
     #print t[1].index(max(t[1]))
@@ -17,36 +24,52 @@ def process(arg):
     #print t[1].index(max(t[1]))
     #t[1].remove(max(t[1]))
     #print t[1].index(max(t[1]))
-    pl.imshow(l2) 
-    pl.axis('off')
+    hist = colorHistogram(l2)
+    c10 = []
+    for i in range(10):
+        c10.append(float(hist.index(max(hist))))
+        hist.remove(max(hist))
+    print c10
+
+#    im = np.zeros((100,300,3),dtype = 'uint8')
+ #   im[:,0:99,0] = 32* 158.9 / 64
+  #  im[:,0:99,1] =32 *( 158.9 % 64 ) / 8
+   # im[:,0:99,2] = 32 * (158.9 % 8 ) 
+    #im[:,100:199,0] = 32 * 335.0 / 64
+ #   im[:,100:199,1] = 32 *( 335.0 % 64 )/ 8
+  #  im[:,100:199,2] = 32 * (335.0 % 8 ) 
+#    im[:,200:299,0] = 32 * 447.6 / 64
+#    im[:,200:299,1] = 32 *( 447.6 % 64 ) / 8
+ #   im[:,200:299,2] = 32 * (447.6 %  8 )  
+  #  pl.imshow(im,vmin =0, vmax = 255)
+   # pl.axis('off')  
+    c1 = float(l2[10,10,0]/16 * 16**2 + l2[10,10,1] + l2[10,10,2]/ 16)
+    print '---------------'
+    print l2[0,0,0]
+    print l2[0,0,1]
+    print l2[0,0,2]
+    c1 = c10[0]
+    c2 = c10[1]
+    c3 = c10[2]
     pl.figure()
-    im = np.zeros((100,300,3),dtype = 'uint8')
-    im[:,0:99,0] = 32* 158.9 / 64
-    im[:,0:99,1] =32 *( 158.9 % 64 ) / 8
-    im[:,0:99,2] = 32 * (158.9 % 8 ) 
-    im[:,100:199,0] = 32 * 335.0 / 64
-    im[:,100:199,1] = 32 *( 335.0 % 64 )/ 8
-    im[:,100:199,2] = 32 * (335.0 % 8 ) 
-    im[:,200:299,0] = 32 * 447.6 / 64
-    im[:,200:299,1] = 32 *( 447.6 % 64 ) / 8
-    im[:,200:299,2] = 32 * (447.6 %  8 )  
-    pl.imshow(im,vmin =0, vmax = 255)
-    pl.axis('off')
-    pl.figure()
-    im2 = np.zeros((100,400,3),dtype='uint8')
-    im2[:,0:99,0] = 32 * 511.0 / 64
-    im2[:,0:99,1] =32 *( 511.0 % 64 ) / 8
-    im2[:,0:99,2] = 32 * (511.0 % 8 ) 
-    im2[:,100:199,0] = 32* 428.0 / 64
-    im2[:,100:199,1] =32 *( 428.0 % 64 ) / 8
-    im2[:,100:199,2] = 32 * (428.0 % 8 ) 
-    im2[:,200:299,0] = 32 * 355.0 / 64
-    im2[:,200:299,1] = 32 *( 355.0 % 64 ) / 8
-    im2[:,200:299,2] = 32 * (355.0 %  8 )  
-    
-    im2[:,300:399,0] = -1
-    im2[:,300:399,1] = -1
-    im2[:,300:399,2] = -1
+    im2 = np.zeros((100,300,3),dtype='uint8')
+    im2[:,0:99,0] = int(16 * c1 / 16**2)
+    print '***************'
+    print c1
+    print int(16 * c1 / 16**2)
+    im2[:,0:99,1] = int(( c1 % 16**2 ))
+    im2[:,0:99,2] = int( 16 * (c1 % 16 )) 
+    print l2
+    print im2[0,0,0]
+    print im2[0,0,1]
+    print im2[0,0,2]
+    im2[:,100:199,0] = int(16* c2 / 16**2)
+    im2[:,100:199,1] = int( ( c2 % 16**2 ) )
+    im2[:,100:199,2] = int(16* (c2 % 16 ) )
+    im2[:,200:299,0] = int(16 * c3 / 16**2)
+    im2[:,200:299,1] = int(( c3 % 16**2 ) )
+    im2[:,200:299,2] = int(16 * (c3 %  16 )  )
+    print im2
     pl.imshow(im2,vmin = 0, vmax = 255)
     pl.axis('off')
     pl.show()
@@ -56,6 +79,7 @@ def rgb2grey(imgrgb):
     for i in range(imgrgb.shape[0]):
        for j in range(imgrgb.shape[1]):
            imgrey[i,j] = (imgrgb[i,j,0] /3  + imgrgb[i,j,1] /3 + imgrgb[i,j,2]/3)
+    ndimage.gaussian_filter(l2, sigma=5)
     return imgrey
   
 def otsu(img):
@@ -127,11 +151,11 @@ def histogram(img):
 def colorHistogram(img):
     # this function builds the RGB color threshold of an image
     im_min = 0
-    im_max = 8**3 - 1
-    hist = [0] * 8 **3
+    im_max = 16**3 - 1
+    hist = [0] * 16 **3
     for i in range(img.shape[0]):
         for j in range(img.shape[1]):
-                 index = (img[i,j][0]/32)*8**2+(img[i,j][1]/32)*8+(img[i,j][2]/32)
+                 index = (img[i,j][0]/16)*16**2+(img[i,j][1]/16)*16+(img[i,j][2]/16)
                  hist[index] = hist[index] +1       
     return hist
 
